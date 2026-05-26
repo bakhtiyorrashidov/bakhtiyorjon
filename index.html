@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Personal portfolio and blog of a developer, creator, and indie hacker." />
+  <title>Rashidov Bakhtiyor</title>
+
+  <!-- ═══════════════════════════════════════════════════════
+       FONTS
+       To change fonts: replace the Google Fonts import URLs
+       and update --font-display / --font-body CSS variables
+  ═══════════════════════════════════════════════════════ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ═══════════════════════════════════════════════════════
+       CSS CUSTOM PROPERTIES — THEME SYSTEM
+       Edit colors here for both dark and light modes
+    ═══════════════════════════════════════════════════════ */
+
+    :root {
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body:    'DM Sans', system-ui, sans-serif;
+      --font-mono:    'DM Mono', monospace;
+
+      /* Transition speed for theme switching */
+      --theme-transition: 0.35s;
+    }
+
+    /* ─── DARK MODE (default) ─────────────────────────────── */
+    [data-theme="dark"] {
+      --bg:           #0a0a0a;
+      --bg-surface:   #111111;
+      --bg-card:      #161616;
+      --bg-hover:     #1e1e1e;
+      --border:       rgba(255,255,255,0.07);
+      --border-strong:rgba(255,255,255,0.12);
+      --text-primary: #f0ece6;
+      --text-secondary:#8a8680;
+      --text-muted:   #4a4845;
+      --accent:       #a8c5da;        /* ← soft blue accent  */
+      --accent-glow:  rgba(168,197,218,0.15);
+      --accent-dim:   rgba(168,197,218,0.08);
+      --shadow-sm:    0 1px 3px rgba(0,0,0,0.6);
+      --shadow-md:    0 4px 24px rgba(0,0,0,0.5);
+      --shadow-lg:    0 16px 64px rgba(0,0,0,0.7);
+      --glass-bg:     rgba(255,255,255,0.03);
+      --glass-border: rgba(255,255,255,0.08);
+      --noise-opacity: 0.035;
+    }
+
+    /* ─── LIGHT MODE ──────────────────────────────────────── */
+    [data-theme="light"] {
+      --bg:           #f7f5f2;
+      --bg-surface:   #f0ede8;
+      --bg-card:      #ffffff;
+      --bg-hover:     #ebe8e3;
+      --border:       rgba(0,0,0,0.07);
+      --border-strong:rgba(0,0,0,0.13);
+      --text-primary: #1a1917;
+      --text-secondary:#6b6763;
+      --text-muted:   #b0ada8;
+      --accent:       #3d6e8c;
+      --accent-glow:  rgba(61,110,140,0.12);
+      --accent-dim:   rgba(61,110,140,0.06);
+      --shadow-sm:    0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md:    0 4px 24px rgba(0,0,0,0.08);
+      --shadow-lg:    0 16px 64px rgba(0,0,0,0.1);
+      --glass-bg:     rgba(255,255,255,0.7);
+      --glass-border: rgba(0,0,0,0.08);
+      --noise-opacity: 0.025;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.65;
+      min-height: 100vh;
+      transition: background var(--theme-transition) ease,
+                  color var(--theme-transition) ease;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ─── Noise texture overlay ───────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: var(--noise-opacity);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    button { cursor: pointer; font-family: var(--font-body); }
+
+    /* ─── Selection ───────────────────────────────────────── */
+    ::selection { background: var(--accent-glow); color: var(--text-primary); }
+
+    /* ─── Scrollbar ───────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+
+    /* ═══════════════════════════════════════════════════════
+       PAGE ROUTER — JS SPA
+    ═══════════════════════════════════════════════════════ */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ═══════════════════════════════════════════════════════
+       FADE-IN ANIMATION
+    ═══════════════════════════════════════════════════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.94); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .fade-up {
+      opacity: 0;
+      animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    .fade-up:nth-child(1) { animation-delay: 0.05s; }
+    .fade-up:nth-child(2) { animation-delay: 0.13s; }
+    .fade-up:nth-child(3) { animation-delay: 0.21s; }
+    .fade-up:nth-child(4) { animation-delay: 0.29s; }
+    .fade-up:nth-child(5) { animation-delay: 0.37s; }
+    .fade-up:nth-child(6) { animation-delay: 0.45s; }
+
+    /* ═══════════════════════════════════════════════════════
+       NAVBAR
+       Unique floating pill navbar
+    ═══════════════════════════════════════════════════════ */
+    .navbar {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 8px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 50px;
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      box-shadow: var(--shadow-md);
+      transition: all var(--theme-transition) ease;
+    }
+
+    .navbar__brand {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.08em;
+      padding: 6px 14px 6px 10px;
+      margin-right: 4px;
+      border-right: 1px solid var(--border);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .navbar__brand:hover { color: var(--text-primary); }
+
+    .navbar__link {
+      font-size: 0.82rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+      padding: 7px 16px;
+      border-radius: 40px;
+      transition: all 0.2s ease;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+    }
+    .navbar__link:hover,
+    .navbar__link.active {
+      color: var(--text-primary);
+      background: var(--bg-hover);
+    }
+
+    .navbar__theme {
+      width: 34px;
+      height: 34px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      margin-left: 4px;
+    }
+    .navbar__theme:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+    .navbar__theme svg { width: 16px; height: 16px; }
+
+    /* ═══════════════════════════════════════════════════════
+       HERO / HOME PAGE  — Two-column layout
+    ═══════════════════════════════════════════════════════ */
+    .home-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 100px 40px 60px;
+    }
+
+    /* ─── Hero wrapper: two-column grid ──────────────────── */
+    .hero {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 64px;
+      max-width: 960px;
+      width: 100%;
+    }
+
+    /* ─── LEFT COLUMN: avatar ─────────────────────────────── */
+    .hero__left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    /*
+      HOW TO CHANGE PROFILE IMAGE:
+      Replace the src attribute in the <img> tag below with your own image.
+    */
+    .hero__avatar-wrap {
+      position: relative;
+      display: inline-block;
+    }
+
+    .hero__avatar {
+      width: 168px;
+      height: 168px;
+      border-radius: 50%;
+      border: 2px solid var(--border-strong);
+      box-shadow:
+        0 0 0 8px var(--accent-dim),
+        0 0 0 9px var(--border),
+        var(--shadow-lg);
+      overflow: hidden;
+      position: relative;
+      transition: box-shadow 0.4s ease, transform 0.4s ease;
+      background: var(--bg-card);
+    }
+    .hero__avatar:hover {
+      transform: scale(1.035);
+      box-shadow:
+        0 0 0 14px var(--accent-glow),
+        0 0 0 15px var(--border),
+        var(--shadow-lg);
+    }
+    .hero__avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    /* Status dot */
+    .hero__avatar-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 14px;
+      height: 14px;
+      background: #4ade80;
+      border-radius: 50%;
+      border: 2.5px solid var(--bg);
+      box-shadow: 0 0 10px rgba(74,222,128,0.65);
+      animation: pulse 2.4s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.65; transform: scale(0.85); }
+    }
+
+    /* ─── Stats strip under avatar ──────────────────────── */
+    .hero__stats {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+    .hero__stat {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      min-width: 148px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .hero__stat:hover {
+      border-color: var(--border-strong);
+      background: var(--bg-hover);
+    }
+    .hero__stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .hero__stat-value {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* ─── RIGHT COLUMN: text content ─────────────────────── */
+    .hero__right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+    }
+
+    /* Eyebrow label */
+    .hero__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.05s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    .hero__eyebrow::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: var(--accent);
+      opacity: 0.6;
+    }
+
+    /*
+      HOW TO CHANGE NAME & SUBTITLE:
+      Edit the text inside .hero__name and .hero__subtitle below in the HTML.
+    */
+    .hero__name {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 5.5vw, 4.6rem);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.025em;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.12s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    .hero__name em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero__subtitle {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.2s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+
+    /* ─── Social icons ────────────────────────────────────── */
+
+    /*
+      HOW TO CHANGE SOCIAL LINKS:
+      Update the href="" values in the .hero__socials section in the HTML.
+    */
+    .hero__socials {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.27s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+
+    .social-icon {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.28s cubic-bezier(0.34,1.56,0.64,1);
+      position: relative;
+    }
+    .social-icon svg { width: 17px; height: 17px; }
+    .social-icon:hover {
+      transform: translateY(-5px) scale(1.08);
+      color: var(--text-primary);
+      border-color: var(--accent);
+      box-shadow: 0 10px 24px var(--accent-glow), 0 2px 8px rgba(0,0,0,0.35);
+      background: var(--bg-hover);
+    }
+
+    /* Social divider dot */
+    .social-sep {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--border-strong);
+      margin: 0 2px;
+    }
+
+    .hero__bio {
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.82;
+      max-width: 500px;
+      margin-bottom: 14px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.34s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+
+    /* ─── Skill / interest tags ──────────────────────────── */
+    .hero__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 36px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.41s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    .hero__tag {
+      font-family: var(--font-mono);
+      font-size: 0.67rem;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      padding: 4px 12px;
+      border-radius: 20px;
+      transition: all 0.2s ease;
+    }
+    .hero__tag:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    /* ─── CTA Buttons ─────────────────────────────────────── */
+    .hero__buttons {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.48s cubic-bezier(0.22,1,0.36,1) forwards;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 26px;
+      border-radius: 50px;
+      font-size: 0.875rem;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      border: 1px solid transparent;
+      transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.06), transparent);
+      transition: opacity 0.2s;
+    }
+    .btn:hover::before { opacity: 1; }
+
+    .btn-primary {
+      background: var(--text-primary);
+      color: var(--bg);
+      border-color: var(--text-primary);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+
+    .btn-ghost {
+      background: var(--glass-bg);
+      color: var(--text-secondary);
+      border-color: var(--border);
+      backdrop-filter: blur(8px);
+    }
+    .btn-ghost:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ─── Decorative ambient blobs ─────────────────────────── */
+    .ambient {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.04;
+    }
+    [data-theme="dark"] .ambient { opacity: 0.045; }
+    [data-theme="light"] .ambient { opacity: 0.12; }
+
+    .ambient-1 {
+      width: 500px; height: 500px;
+      background: var(--accent);
+      top: -100px; right: -100px;
+      animation: drift1 18s ease-in-out infinite alternate;
+    }
+    .ambient-2 {
+      width: 400px; height: 400px;
+      background: var(--accent);
+      bottom: -80px; left: -60px;
+      animation: drift2 22s ease-in-out infinite alternate;
+    }
+    @keyframes drift1 { to { transform: translate(-60px, 60px) scale(1.1); } }
+    @keyframes drift2 { to { transform: translate(60px, -50px) scale(1.08); } }
+
+    /* ═══════════════════════════════════════════════════════
+       BLOG PAGE
+    ═══════════════════════════════════════════════════════ */
+    .blog-page {
+      min-height: 100vh;
+      padding: 110px 24px 80px;
+    }
+
+    .blog-container {
+      max-width: 980px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 64px;
+      align-items: start;
+    }
+
+    /* ─── Blog left column ────────────────────────────────── */
+    .blog-main {}
+
+    .blog-header {
+      margin-bottom: 48px;
+    }
+    .blog-header__label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .blog-header__title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      color: var(--text-primary);
+    }
+    .blog-header__title em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    /* ─── Month group ─────────────────────────────────────── */
+    .post-group {
+      margin-bottom: 40px;
+    }
+    .post-group__label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .post-group__label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ─── Post row ────────────────────────────────────────── */
+    .post-row {
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .post-row::before {
+      content: '';
+      position: absolute;
+      left: -100%;
+      top: 0; bottom: 0;
+      width: 100%;
+      background: var(--accent-dim);
+      transition: left 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .post-row:hover::before { left: 0; }
+    .post-row:hover .post-row__title { color: var(--text-primary); }
+    .post-row:hover .post-row__arrow { opacity: 1; transform: translate(0, 0); }
+    .post-row:hover .post-row__date { color: var(--accent); }
+
+    .post-row__date {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      min-width: 46px;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .post-row__title {
+      flex: 1;
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+      transition: color 0.2s;
+      position: relative;
+    }
+    .post-row__tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 20px;
+      position: relative;
+    }
+    .post-row__arrow {
+      color: var(--accent);
+      opacity: 0;
+      transform: translate(-8px, 0);
+      transition: all 0.2s ease;
+      position: relative;
+      font-size: 0.9rem;
+    }
+
+    /* ─── Blog right sidebar ──────────────────────────────── */
+    .blog-sidebar {
+      position: sticky;
+      top: 100px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sidebar-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      transition: border-color 0.2s;
+    }
+    .sidebar-card:hover { border-color: var(--border-strong); }
+
+    .sidebar-card__label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .sidebar-about__avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-bottom: 12px;
+      background: var(--bg-surface);
+    }
+    .sidebar-about__avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .sidebar-about__name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .sidebar-about__bio {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .sidebar-channel__link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .sidebar-channel__link:last-child { border-bottom: none; }
+    .sidebar-channel__link:hover { gap: 16px; }
+    .sidebar-channel__link:hover .ch-title { color: var(--text-primary); }
+
+    .ch-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--bg-surface);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .ch-icon svg { width: 15px; height: 15px; }
+    .ch-title {
+      font-size: 0.82rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+      transition: color 0.2s;
+    }
+    .ch-sub {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+    .ch-info { flex: 1; }
+
+    /* ═══════════════════════════════════════════════════════
+       ARTICLE PAGE
+    ═══════════════════════════════════════════════════════ */
+    .article-page {
+      min-height: 100vh;
+      padding: 80px 24px 100px;
+    }
+
+    /* ─── Reading progress bar ────────────────────────────── */
+    .progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      background: var(--accent);
+      width: 0%;
+      z-index: 2000;
+      transition: width 0.1s linear;
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    .article-container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .article-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 48px;
+      transition: all 0.2s;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      letter-spacing: 0.06em;
+    }
+    .article-back:hover { color: var(--text-secondary); gap: 12px; }
+    .article-back svg { width: 14px; height: 14px; }
+
+    .article-meta {
+      margin-bottom: 32px;
+    }
+    .article-meta__tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .article-tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(168,197,218,0.15);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .article-meta__date {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5.5vw, 3.2rem);
+      font-weight: 400;
+      letter-spacing: -0.025em;
+      line-height: 1.12;
+      color: var(--text-primary);
+      margin-bottom: 28px;
+    }
+
+    .article-divider {
+      width: 40px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 1px;
+      margin-bottom: 40px;
+    }
+
+    .article-body {
+      font-size: 1.02rem;
+      line-height: 1.82;
+      color: var(--text-secondary);
+    }
+    .article-body p { margin-bottom: 1.6em; }
+    .article-body h2 {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin: 2.5em 0 0.8em;
+      letter-spacing: -0.015em;
+    }
+    .article-body h3 {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin: 2em 0 0.6em;
+    }
+    .article-body code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 5px;
+      color: var(--accent);
+    }
+    .article-body pre {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      overflow-x: auto;
+      margin: 2em 0;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+    }
+    .article-body pre code {
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    .article-body blockquote {
+      border-left: 2px solid var(--accent);
+      padding: 4px 0 4px 22px;
+      margin: 2em 0;
+      color: var(--text-secondary);
+      font-style: italic;
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+    }
+    .article-body a {
+      color: var(--accent);
+      border-bottom: 1px solid var(--accent-glow);
+      transition: border-color 0.2s;
+    }
+    .article-body a:hover { border-color: var(--accent); }
+
+    /* ─── Article footer ──────────────────────────────────── */
+    .article-footer {
+      margin-top: 72px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: gap;
+      gap: 16px;
+    }
+    .article-footer__author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .article-footer__avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background: var(--bg-card);
+    }
+    .article-footer__avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .article-footer__name {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .article-footer__label {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════════════ */
+    .site-footer {
+      padding: 40px 24px 32px;
+      border-top: 1px solid var(--border);
+      margin-top: 80px;
+    }
+    .site-footer__inner {
+      max-width: 980px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .site-footer__copy {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+    .site-footer__quote {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════════════════ */
+    @media (max-width: 860px) {
+      /* Stack hero to single column on tablets */
+      .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 40px;
+        justify-items: center;
+      }
+      .hero__right { align-items: center; }
+      .hero__eyebrow { justify-content: center; }
+      .hero__bio { max-width: 520px; text-align: center; }
+      .hero__tags { justify-content: center; }
+      .hero__buttons { justify-content: center; }
+      .hero__socials { justify-content: center; }
+      .hero__stats { flex-direction: row; justify-content: center; flex-wrap: wrap; width: auto; }
+      .hero__stat { min-width: 120px; }
+    }
+
+    @media (max-width: 768px) {
+      .navbar { top: 16px; padding: 5px 6px; }
+      .navbar__brand { display: none; }
+      .blog-container { grid-template-columns: 1fr; gap: 40px; }
+      .blog-sidebar { position: static; order: -1; }
+      .post-row__tag { display: none; }
+      .home-page { padding: 90px 24px 60px; }
+    }
+
+    @media (max-width: 480px) {
+      .hero__name { font-size: 2.6rem; }
+      .hero__bio { font-size: 0.94rem; }
+      .hero__buttons { gap: 10px; flex-wrap: wrap; }
+      .btn { padding: 10px 20px; font-size: 0.82rem; }
+      .hero__avatar { width: 130px; height: 130px; }
+      .hero__stats { gap: 6px; }
+      .hero__stat { min-width: 100px; padding: 7px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient light blobs -->
+  <div class="ambient ambient-1" aria-hidden="true"></div>
+  <div class="ambient ambient-2" aria-hidden="true"></div>
+
+  <!-- Reading progress bar (shown only on article page) -->
+  <div class="progress-bar" id="progressBar" role="progressbar" aria-hidden="true"></div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       NAVBAR
+       To add links: duplicate a .navbar__link and update its data-page
+  ═══════════════════════════════════════════════════════ -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <span class="navbar__brand" data-page="home" role="link" tabindex="0">ar/</span>
+    <a class="navbar__link active" data-page="blog" role="button" tabindex="0">Blog</a>
+    <a class="navbar__link" href="https://t.me/rashidovrdv" target="_blank" rel="noopener" tabindex="0">Channel</a>
+    <button class="navbar__theme" id="themeToggle" aria-label="Toggle dark/light mode" title="Toggle theme">
+      <!-- Sun icon (shown in dark mode) -->
+      <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+      <!-- Moon icon (shown in light mode) -->
+      <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════
+       HOME PAGE
+  ═══════════════════════════════════════════════════════ -->
+  <main id="page-home" class="page home-page active" aria-label="Home">
+    <section class="hero" aria-label="Hero section">
+
+      <!-- ── LEFT COLUMN: Avatar + stats ─────────────────── -->
+      <div class="hero__left">
+
+        <!-- Avatar
+             HOW TO CHANGE: replace src with your own image URL -->
+        <div class="hero__avatar-wrap">
+          <div class="hero__avatar">
+            <img
+              src="D:\Newfolder\d60010f1d32bfc9825e78ead3c92d4a5.jpg"
+              alt="Rashidov Bakhtiyor — profile photo"
+              loading="eager"
+            />
+          </div>
+        </div>
+
+        <!-- Quick stats strip — edit values as needed -->
+        <div class="hero__stats">
+        </div>
+
+      </div>
+
+      <!-- ── RIGHT COLUMN: Text content ──────────────────── -->
+      <div class="hero__right">
+
+        <!-- Eyebrow -->
+        <span class="hero__eyebrow">Personal portfolio</span>
+
+        <!-- Name -->
+        <h1 class="hero__name">Bakhtiyor <em>Rashidov</em></h1>
+
+        <!-- Subtitle -->
+        <p class="hero__subtitle">Programmer · Creator</p>
+
+        <!-- Social Icons
+             HOW TO CHANGE: update the href="" values to your own profiles -->
+        <div class="hero__socials" aria-label="Social links">
+
+          <!-- GitHub -->
+          <a class="social-icon" href="https://github.com/bakhtiyorrashidov" target="_blank" rel="noopener" aria-label="GitHub profile" title="GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.92.57.1.78-.25.78-.55v-1.93c-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.33.95.1-.74.4-1.24.72-1.53-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.16 1.18a10.95 10.95 0 0 1 5.76 0c2.19-1.49 3.16-1.18 3.16-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.83 1.18 3.09 0 4.42-2.7 5.4-5.27 5.68.41.36.78 1.07.78 2.16v3.2c0 .31.2.66.79.55C20.21 21.4 23.5 17.09 23.5 12 23.5 5.65 18.35.5 12 .5z"/>
+            </svg>
+          </a>
+
+          <!-- YouTube -->
+          <a class="social-icon" href="https://youtube.com/@yourchannel" target="_blank" rel="noopener" aria-label="YouTube channel" title="YouTube">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M23.5 6.5s-.23-1.65-.96-2.38c-.91-.96-1.93-.96-2.4-1.02C17.02 3 12 3 12 3s-5.02 0-8.14.1c-.47.06-1.49.06-2.4 1.02C.73 4.85.5 6.5.5 6.5S.27 8.43.27 10.36v1.77c0 1.93.23 3.86.23 3.86s.23 1.65.96 2.38c.91.96 2.1.93 2.63 1.03C5.74 19.6 12 19.63 12 19.63s5.02-.01 8.14-.11c.47-.06 1.49-.07 2.4-1.03.73-.73.96-2.38.96-2.38s.23-1.93.23-3.86v-1.77C23.73 8.43 23.5 6.5 23.5 6.5zM9.73 14.8V8.7l6.46 3.06-6.46 3.04z"/>
+            </svg>
+          </a>
+
+          <!-- Telegram -->
+          <a class="social-icon" href="https://t.me/rashidovrdv" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.94 8.19-2.02 9.52c-.14.65-.53.81-1.08.5l-3-2.21-1.45 1.39c-.16.16-.3.3-.61.3l.21-3.03 5.5-4.97c.24-.21-.05-.33-.37-.12L6.4 14.35 3.45 13.4c-.65-.2-.66-.65.14-.96l11.63-4.49c.54-.2 1.01.13.72.96v-.72z"/>
+            </svg>
+          </a>
+
+          <div class="social-sep" aria-hidden="true"></div>
+
+          <!-- Codeforces -->
+          <a class="social-icon" href="https://codeforces.com/profile/bakhtiyor_ai" target="_blank" rel="noopener" aria-label="Codeforces profile" title="Codeforces">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M4.5 7.5C3.12 7.5 2 8.62 2 10v8c0 1.38 1.12 2.5 2.5 2.5S7 19.38 7 18v-8C7 8.62 5.88 7.5 4.5 7.5zM12 3.5C10.62 3.5 9.5 4.62 9.5 6v12c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V6c0-1.38-1.12-2.5-2.5-2.5zm7.5 7C18.12 10.5 17 11.62 17 13v5c0 1.38 1.12 2.5 2.5 2.5S22 19.38 22 18v-5c0-1.38-1.12-2.5-2.5-2.5z"/>
+            </svg>
+          </a>
+
+        </div>
+
+        <!-- Bio -->
+        <p class="hero__bio">
+          I write about life beyond the screen.
+        </p>
+
+
+        <!-- CTA Buttons -->
+        <div class="hero__buttons">
+          <button class="btn btn-primary" data-page="blog" aria-label="Read the blog">
+            Read Blog
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          <button class="btn btn-ghost" id="aboutBtn" aria-label="About me section">
+            About Me
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <footer class="site-footer" aria-label="Site footer">
+      <div class="site-footer__inner">
+        <span class="site-footer__copy">© 2025 Bakhtiyor Rashidov</span>
+        <span class="site-footer__quote">crafted with intention, not perfection.</span>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════
+       BLOG PAGE
+       HOW TO ADD BLOG POSTS:
+       1. Add an entry to the `posts` array in the JavaScript below
+       2. Each post needs: id, date, month, year, title, tag, content (HTML)
+       3. The blog page re-renders automatically
+  ═══════════════════════════════════════════════════════ -->
+  <main id="page-blog" class="page blog-page" aria-label="Blog">
+    <div class="blog-container">
+
+      <article class="blog-main" aria-label="Blog posts">
+        <header class="blog-header fade-up">
+          <p class="blog-header__label">Writing</p>
+          <h1 class="blog-header__title">Notes &amp; <em>Thoughts</em></h1>
+        </header>
+        <div id="postList" aria-live="polite"></div>
+      </article>
+
+      <aside class="blog-sidebar" aria-label="Sidebar">
+
+        <!-- About card -->
+        <div class="sidebar-card fade-up">
+          <p class="sidebar-card__label">About</p>
+          <div class="sidebar-about__avatar">
+            <img src="D:\Newfolder\d60010f1d32bfc9825e78ead3c92d4a5.jpg" alt="Bakhtiyor Rashidov" loading="lazy"/>
+          </div>
+          <p class="sidebar-about__name">Bakhtiyor Rashidov</p>
+          <p class="sidebar-about__bio">I write about life beyond the screen.</p>
+        </div>
+
+        <!-- Channel card -->
+        <div class="sidebar-card fade-up">
+          <p class="sidebar-card__label">Elsewhere</p>
+
+          <a class="sidebar-channel__link" href="https://youtube.com/@yourchannel" target="_blank" rel="noopener" aria-label="YouTube channel">
+            <div class="ch-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M23.5 6.5s-.23-1.65-.96-2.38c-.91-.96-1.93-.96-2.4-1.02C17.02 3 12 3 12 3s-5.02 0-8.14.1c-.47.06-1.49.06-2.4 1.02C.73 4.85.5 6.5.5 6.5S.27 8.43.27 10.36v1.77c0 1.93.23 3.86.23 3.86s.23 1.65.96 2.38c.91.96 2.1.93 2.63 1.03C5.74 19.6 12 19.63 12 19.63s5.02-.01 8.14-.11c.47-.06 1.49-.07 2.4-1.03.73-.73.96-2.38.96-2.38s.23-1.93.23-3.86v-1.77C23.73 8.43 23.5 6.5 23.5 6.5zM9.73 14.8V8.7l6.46 3.06-6.46 3.04z"/>
+              </svg>
+            </div>
+            <div class="ch-info">
+              <div class="ch-title">YouTube Channel</div>
+              <div class="ch-sub">Videos & tutorials</div>
+            </div>
+          </a>
+
+          <a class="sidebar-channel__link" href="https://t.me/rashidovrdv" target="_blank" rel="noopener" aria-label="Telegram channel">
+            <div class="ch-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.94 8.19-2.02 9.52c-.14.65-.53.81-1.08.5l-3-2.21-1.45 1.39c-.16.16-.3.3-.61.3l.21-3.03 5.5-4.97c.24-.21-.05-.33-.37-.12L6.4 14.35 3.45 13.4c-.65-.2-.66-.65.14-.96l11.63-4.49c.54-.2 1.01.13.72.96v-.72z"/>
+              </svg>
+            </div>
+            <div class="ch-info">
+              <div class="ch-title">Telegram</div>
+              <div class="ch-sub">Quick updates</div>
+            </div>
+          </a>
+
+          <a class="sidebar-channel__link" href="https://github.com/bakhtiyorrashidov" target="_blank" rel="noopener" aria-label="GitHub profile">
+            <div class="ch-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.92.57.1.78-.25.78-.55v-1.93c-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.33.95.1-.74.4-1.24.72-1.53-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.16 1.18a10.95 10.95 0 0 1 5.76 0c2.19-1.49 3.16-1.18 3.16-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.83 1.18 3.09 0 4.42-2.7 5.4-5.27 5.68.41.36.78 1.07.78 2.16v3.2c0 .31.2.66.79.55C20.21 21.4 23.5 17.09 23.5 12 23.5 5.65 18.35.5 12 .5z"/>
+              </svg>
+            </div>
+            <div class="ch-info">
+              <div class="ch-title">GitHub</div>
+              <div class="ch-sub">Open source projects</div>
+            </div>
+          </a>
+
+        </div>
+
+      </aside>
+    </div>
+
+    <footer class="site-footer" aria-label="Site footer">
+      <div class="site-footer__inner">
+        <span class="site-footer__copy">© 2025 Bakhtiyor Rashidov</span>
+        <span class="site-footer__quote">words over noise.</span>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════
+       ARTICLE PAGE — rendered dynamically by JS
+  ═══════════════════════════════════════════════════════ -->
+  <main id="page-article" class="page article-page" aria-label="Article">
+    <div class="article-container">
+      <button class="article-back" id="articleBack" aria-label="Back to blog">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to writing
+      </button>
+      <div id="articleContent" aria-live="polite"></div>
+      <footer class="article-footer" aria-label="Article footer">
+        <div class="article-footer__author">
+          <div class="article-footer__avatar">
+            <img src="D:\Newfolder\d60010f1d32bfc9825e78ead3c92d4a5.jpg" alt="Bakhtiyor Rashidov" loading="lazy"/>
+          </div>
+          <div>
+            <div class="article-footer__name">Bakhtiyor Rashidov</div>
+            <div class="article-footer__label">Developer & Writer</div>
+          </div>
+        </div>
+        <button class="btn btn-ghost" id="articleBackBottom" aria-label="Back to blog">← All posts</button>
+      </footer>
+    </div>
+  </main>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       JAVASCRIPT
+  ═══════════════════════════════════════════════════════ -->
+  <script>
+    /* ═════════════════════════════════════════════════════
+       BLOG POSTS DATA
+       ─────────────────────────────────────────────────────
+       HOW TO ADD A POST:
+       Copy one of the objects below and:
+       1. Give it a unique `id` (number)
+       2. Set `date`, `month`, `year` (for grouping)
+       3. Write a `title`
+       4. Set a `tag` (displayed as a pill label)
+       5. Write `content` as an HTML string
+    ═════════════════════════════════════════════════════ */
+    const posts = [
+      {
+        id: 1,
+        date: 'May 18',
+        month: 'May 2025',
+        year: 2025,
+        title: 'The quiet power of boring technology',
+        tag: 'craft',
+        content: `
+          <p>There is something deeply satisfying about a tool that does exactly one thing well. No sprawling configuration, no plugin ecosystem, no Discord server with 40,000 members. Just a small, deliberate piece of software that you trust completely.</p>
+
+          <p>I have been thinking about this a lot lately as I rebuild parts of my infrastructure. Every time I reach for the latest framework or shiny abstraction, I feel a quiet pull in the opposite direction — toward the thing I already understand.</p>
+
+          <h2>Stability as a feature</h2>
+
+          <p>Most technology discussions optimize for novelty. The new ORM, the new build system, the new runtime. But for most workloads — the ones that actually run quietly and reliably in production — the 10-year-old solution is often the correct one.</p>
+
+          <p>SQLite, for instance. It is not glamorous. It does not scale to billions of rows on a single node. But for a personal project, an internal tool, a small SaaS — it is almost certainly more than enough. The file is the database. You can copy it with <code>cp</code>. You can open it in a GUI. It has no daemon, no connection pool, no infrastructure footprint.</p>
+
+          <blockquote>The most reliable code is the code you don't have to think about.</blockquote>
+
+          <h2>The cost of novelty</h2>
+
+          <p>Every new dependency is a future maintenance burden. Every abstraction that felt clever at 2am becomes a cognitive load at 9am six months later. When I look back at projects I have abandoned, the pattern is almost always the same: I got excited about the stack and bored by the product.</p>
+
+          <pre><code># The simplest possible thing
+sqlite3 myapp.db "SELECT * FROM users WHERE active = 1"</code></pre>
+
+          <p>The boring path is rarely the path of least resistance at the start. It requires resisting the excitement of novelty, the dopamine hit of a beautiful README, the imagined future where you need the scale that a complex system provides.</p>
+
+          <p>But when your project is running in three years, unchanged, doing exactly what you asked of it — that is its own quiet reward.</p>
+
+          <h2>What this looks like in practice</h2>
+
+          <p>I now have a simple rule: before adopting something new, I ask whether the problem it solves is a problem I currently have. Not a problem I might have. Not a problem I had at a previous job. A problem I have today.</p>
+
+          <p>It sounds obvious. It is surprisingly hard to follow.</p>
+        `
+      },
+    ];
+
+    /* ═════════════════════════════════════════════════════
+       ROUTER
+    ═════════════════════════════════════════════════════ */
+    function showPage(name) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const el = document.getElementById('page-' + name);
+      if (el) {
+        el.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      // Update navbar active state
+      document.querySelectorAll('.navbar__link[data-page]').forEach(l => {
+        l.classList.toggle('active', l.dataset.page === name);
+      });
+    }
+
+    /* ═════════════════════════════════════════════════════
+       RENDER BLOG POST LIST
+    ═════════════════════════════════════════════════════ */
+    function renderBlog() {
+      const container = document.getElementById('postList');
+      if (!container) return;
+
+      // Group by month
+      const groups = {};
+      posts.forEach(p => {
+        if (!groups[p.month]) groups[p.month] = [];
+        groups[p.month].push(p);
+      });
+
+      let html = '';
+      Object.entries(groups).forEach(([month, monthPosts]) => {
+        html += `<div class="post-group fade-up">
+          <div class="post-group__label">${month}</div>`;
+        monthPosts.forEach(p => {
+          html += `
+          <div class="post-row" data-id="${p.id}" role="button" tabindex="0" aria-label="Read: ${p.title}">
+            <span class="post-row__date">${p.date}</span>
+            <span class="post-row__title">${p.title}</span>
+            <span class="post-row__tag">${p.tag}</span>
+            <span class="post-row__arrow" aria-hidden="true">→</span>
+          </div>`;
+        });
+        html += `</div>`;
+      });
+      container.innerHTML = html;
+
+      // Attach click events
+      container.querySelectorAll('.post-row').forEach(row => {
+        const open = () => openPost(parseInt(row.dataset.id));
+        row.addEventListener('click', open);
+        row.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+      });
+    }
+
+    /* ═════════════════════════════════════════════════════
+       RENDER ARTICLE
+    ═════════════════════════════════════════════════════ */
+    function openPost(id) {
+      const post = posts.find(p => p.id === id);
+      if (!post) return;
+
+      const html = `
+        <div class="article-meta">
+          <div class="article-meta__tags">
+            <span class="article-tag">${post.tag}</span>
+          </div>
+          <div class="article-meta__date">${post.date}, ${post.year}</div>
+        </div>
+        <h1 class="article-title">${post.title}</h1>
+        <div class="article-divider" aria-hidden="true"></div>
+        <div class="article-body">${post.content}</div>
+      `;
+      document.getElementById('articleContent').innerHTML = html;
+      showPage('article');
+    }
+
+    /* ═════════════════════════════════════════════════════
+       READING PROGRESS BAR
+    ═════════════════════════════════════════════════════ */
+    const progressBar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const articlePage = document.getElementById('page-article');
+      if (!articlePage.classList.contains('active')) {
+        progressBar.style.width = '0%';
+        return;
+      }
+      const scrolled = window.scrollY;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = total > 0 ? Math.min(100, (scrolled / total) * 100) : 0;
+      progressBar.style.width = pct + '%';
+    });
+
+    /* ═════════════════════════════════════════════════════
+       THEME TOGGLE
+       Theme is saved to localStorage
+    ═════════════════════════════════════════════════════ */
+    const html = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const iconSun  = document.getElementById('iconSun');
+    const iconMoon = document.getElementById('iconMoon');
+
+    function applyTheme(theme) {
+      html.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      if (theme === 'dark') {
+        iconSun.style.display  = '';
+        iconMoon.style.display = 'none';
+        themeToggle.setAttribute('aria-label', 'Switch to light mode');
+      } else {
+        iconSun.style.display  = 'none';
+        iconMoon.style.display = '';
+        themeToggle.setAttribute('aria-label', 'Switch to dark mode');
+      }
+    }
+
+    // Load saved theme or default to dark
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    applyTheme(savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    });
+
+    /* ═════════════════════════════════════════════════════
+       NAVIGATION WIRING
+    ═════════════════════════════════════════════════════ */
+    // Navbar links with data-page attribute
+    document.querySelectorAll('[data-page]').forEach(el => {
+      el.addEventListener('click', () => showPage(el.dataset.page));
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter') showPage(el.dataset.page);
+      });
+    });
+
+    // Button with data-page
+    document.querySelectorAll('button[data-page]').forEach(btn => {
+      btn.addEventListener('click', () => showPage(btn.dataset.page));
+    });
+
+    // Back buttons on article page
+    ['articleBack', 'articleBackBottom'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('click', () => showPage('blog'));
+    });
+
+    // About me button — for now scrolls within home; can link to an about page
+    const aboutBtn = document.getElementById('aboutBtn');
+    if (aboutBtn) {
+      aboutBtn.addEventListener('click', () => {
+        // Placeholder: could navigate to an about page or open a modal
+        alert('About page coming soon! Edit index.html to add your content here.');
+      });
+    }
+
+    /* ═════════════════════════════════════════════════════
+       INIT
+    ═════════════════════════════════════════════════════ */
+    renderBlog();
+
+    // Default to home page
+    showPage('home');
+
+    /* ═════════════════════════════════════════════════════
+       KEYBOARD NAV: Blog link in navbar should go to blog
+    ═════════════════════════════════════════════════════ */
+    document.querySelectorAll('.navbar__link').forEach(link => {
+      if (link.dataset.page) {
+        link.setAttribute('role', 'button');
+        link.setAttribute('tabindex', '0');
+      }
+    });
+  </script>
+
+</body>
+</html>
